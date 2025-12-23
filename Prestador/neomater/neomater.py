@@ -24,7 +24,7 @@ def analisar_neomater():
 
     for municipio in municipios:
         try:
-            # carregar listas de procedimentos
+            
             otorrino = pacote_otorrino()
             geral = pacote_geral()
             oftalmo = pacote_oftalmo()
@@ -62,13 +62,13 @@ def analisar_neomater():
                     mask = tabela[coluna_procedimento].astype(str) == str(procedimento)
                     quantidade = tabela.loc[mask, coluna_quantidade].sum()
                     
-                    # CORREÇÃO: Converter para número e verificar se é válido
+                    
                     try:
                         quantidade_num = float(quantidade) if not pd.isna(quantidade) else 0
                     except (ValueError, TypeError):
                         quantidade_num = 0
                     
-                    # CORREÇÃO: Verificar se é maior que 0
+                    
                     if quantidade_num > 0:
                         resultados[procedimento] = quantidade_num
                         total += quantidade_num
@@ -96,7 +96,7 @@ def analisar_neomater():
             for nome, lista in grupos.items():
                 totais[nome] = process_group(lista or [])
             
-            # CORREÇÃO: Criar DataFrame corretamente
+            
             if resultados:
                 for nome, lista in grupos.items():
                     totais[nome] = process_group(lista or [])
@@ -125,14 +125,14 @@ def analisar_neomater():
             procedimentos_na_coluna = tabela[coluna_procedimento].dropna().unique()
             procedimentos_na_coluna = [str(p) for p in procedimentos_na_coluna if p and str(p).strip()]
             
-            # Encontrar procedimentos que estão na coluna mas não nas listas
+            
             procedimentos_nao_mapeados = {}
             for procedimento in procedimentos_na_coluna:
                 if procedimento not in todos_procedimentos_conhecidos:
                     mask = tabela[coluna_procedimento].astype(str) == str(procedimento)
                     quantidade = tabela.loc[mask, coluna_quantidade].sum()
                     
-                    # CORREÇÃO: Converter para número
+                    
                     try:
                         quantidade_num = float(quantidade) if not pd.isna(quantidade) else 0
                     except (ValueError, TypeError):
@@ -150,7 +150,7 @@ def analisar_neomater():
                     print(f"  '{procedimento}': {quantidade}")
                     total_nao_mapeado += quantidade
 
-                # CORREÇÃO: Criar DataFrame para não mapeados
+                
                 procedimentoNaoListado = {
                     "Procedimento Nao listados": list(procedimentos_nao_mapeados.keys()),
                     "Quantidade Nao listados": list(procedimentos_nao_mapeados.values()),
@@ -161,7 +161,7 @@ def analisar_neomater():
             
         except FileNotFoundError:
             print(f"Arquivo {arquivo} não encontrado!")
-            continue  # CORREÇÃO: continuar para o próximo município
+            continue  
         except Exception as e:
             print(f"Erro em {municipio}: {e}")
-            continue  # CORREÇÃO: continuar para o próximo município
+            continue  
