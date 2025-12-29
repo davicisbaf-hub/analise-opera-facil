@@ -18,19 +18,22 @@ def criar_planilha_municipio_colunas(caminho_arquivo):
     wb = load_workbook(caminho_arquivo)
     ws = wb.active
     
-    
-    merged_ranges = ws.merged_cells.ranges
-    
+    # Verificar se merged_cells existe e não é None
     merged_cells_dict = {}
-    for merged_range in merged_ranges:
-        min_col, min_row, max_col, max_row = merged_range.bounds
-        valor = ws.cell(row=min_row, column=min_col).value
+    
+    # Verificar se a planilha tem células mescladas
+    if ws.merged_cells and ws.merged_cells.ranges is not None:
+        merged_ranges = ws.merged_cells.ranges
         
-        for row in range(min_row, max_row + 1):
-            for col in range(min_col, max_col + 1):
-                merged_cells_dict[(row, col)] = valor
+        for merged_range in merged_ranges:
+            min_col, min_row, max_col, max_row = merged_range.bounds
+            valor = ws.cell(row=min_row, column=min_col).value
+            
+            for row in range(min_row, max_row + 1):
+                for col in range(min_col, max_col + 1):
+                    merged_cells_dict[(row, col)] = valor
     
-    
+    # Restante do código permanece igual
     dados_por_municipio = {}
     
     municipio_atual = None
@@ -87,7 +90,7 @@ def criar_planilha_municipio_colunas(caminho_arquivo):
     
     
     if not dados_por_municipio:
-        print(f"⚠️ Nenhum dado encontrado para organizar por município")
+        print("AVISO: Nenhum dado encontrado para organizar por municipio")
         return None, []
     
     
@@ -152,19 +155,21 @@ def criar_planilha_dados_detalhados(caminho_arquivo):
     wb = load_workbook(caminho_arquivo)
     ws = wb.active
     
-    
-    merged_ranges = ws.merged_cells.ranges
-    
+    # Verificar se merged_cells existe e não é None
     merged_cells_dict = {}
-    for merged_range in merged_ranges:
-        min_col, min_row, max_col, max_row = merged_range.bounds
-        valor = ws.cell(row=min_row, column=min_col).value
+    
+    if ws.merged_cells and ws.merged_cells.ranges is not None:
+        merged_ranges = ws.merged_cells.ranges
         
-        for row in range(min_row, max_row + 1):
-            for col in range(min_col, max_col + 1):
-                merged_cells_dict[(row, col)] = valor
+        for merged_range in merged_ranges:
+            min_col, min_row, max_col, max_row = merged_range.bounds
+            valor = ws.cell(row=min_row, column=min_col).value
+            
+            for row in range(min_row, max_row + 1):
+                for col in range(min_col, max_col + 1):
+                    merged_cells_dict[(row, col)] = valor
     
-    
+    # Restante do código permanece igual
     dados_detalhados = []
     municipio_atual = None
     estado_atual = None
@@ -204,9 +209,9 @@ def criar_planilha_dados_detalhados(caminho_arquivo):
     
     
     if dados_detalhados:
-        colunas = ['Município', 'Data/Hora', 'Paciente', 'Data Nascimento', 
+        colunas = ['Municipio', 'Data/Hora', 'Paciente', 'Data Nascimento', 
                   'Procedimento', 'Quantidade', 'Valor Regional', 'Contraste', 
-                  'Sedação', 'Valor SUS', 'Valor Total']
+                  'Sedacao', 'Valor SUS', 'Valor Total']
         
         
         if len(dados_detalhados[0]) < len(colunas):
@@ -225,15 +230,23 @@ def processar_relatorio_simplificado(caminho_arquivo):
     2. Dados Detalhados
     """
     
-    print(f"📊 Processando: {caminho_arquivo}")
+    print(f"Processando: {caminho_arquivo}")
     
+    # Adicionar verificação de arquivo
+    if not os.path.exists(caminho_arquivo):
+        print(f"ERRO: Arquivo nao encontrado: {caminho_arquivo}")
+        return None
     
-    df_municipio_colunas, municipios_encontrados = criar_planilha_municipio_colunas(caminho_arquivo)
-    df_dados_detalhados = criar_planilha_dados_detalhados(caminho_arquivo)
+    try:
+        df_municipio_colunas, municipios_encontrados = criar_planilha_municipio_colunas(caminho_arquivo)
+        df_dados_detalhados = criar_planilha_dados_detalhados(caminho_arquivo)
+    except Exception as e:
+        print(f"ERRO ao processar arquivo {caminho_arquivo}: {str(e)}")
+        return None
     
     
     if df_municipio_colunas is None and df_dados_detalhados is None:
-        print(f"❌ Nenhum dado encontrado no arquivo: {caminho_arquivo}")
+        print(f"ERRO: Nenhum dado encontrado no arquivo: {caminho_arquivo}")
         return None
     
     
@@ -246,26 +259,31 @@ def processar_relatorio_simplificado(caminho_arquivo):
     nome_arquivo = f'{output_dir}/{nome_base}_SIMPLIFICADO.xlsx'
     
     
-    with pd.ExcelWriter(nome_arquivo, engine='openpyxl') as writer:
+    try:
+        with pd.ExcelWriter(nome_arquivo, engine='openpyxl') as writer:
+            
+            if df_municipio_colunas is not None:
+                df_municipio_colunas.to_excel(writer, sheet_name='Por Municipio Colunas', index=False)
+                print("   OK: Planilha 'Por Municipio Colunas' criada (formato modificado)")
+            
+            
+            if df_dados_detalhados is not None:
+                df_dados_detalhados.to_excel(writer, sheet_name='Dados Detalhados', index=False)
+                print("   OK: Planilha 'Dados Detalhados' criada")
         
-        if df_municipio_colunas is not None:
-            df_municipio_colunas.to_excel(writer, sheet_name='Por Município Colunas', index=False)
-            print(f"   ✅ Planilha 'Por Município Colunas' criada (formato modificado)")
+        print(f"OK: Arquivo salvo: {nome_arquivo}")
         
-        
-        if df_dados_detalhados is not None:
-            df_dados_detalhados.to_excel(writer, sheet_name='Dados Detalhados', index=False)
-            print(f"   ✅ Planilha 'Dados Detalhados' criada")
-    
-    print(f"✅ Arquivo salvo: {nome_arquivo}")
+    except Exception as e:
+        print(f"ERRO ao salvar arquivo: {str(e)}")
+        return None
     
     
-    print(f"\n📋 RESUMO DO ARQUIVO:")
+    print("\nRESUMO DO ARQUIVO:")
     print("-" * 60)
     
     if df_municipio_colunas is not None:
-        print(f"• Planilha 'Por Município Colunas':")
-        print(f"  - Municípios: {len(municipios_encontrados)}")
+        print(f"• Planilha 'Por Municipio Colunas':")
+        print(f"  - Municipios: {len(municipios_encontrados)}")
         print(f"  - Colunas: {len(df_municipio_colunas.columns)}")
         print(f"  - Linhas: {len(df_municipio_colunas)}")
     
@@ -276,11 +294,11 @@ def processar_relatorio_simplificado(caminho_arquivo):
     
     
     if df_municipio_colunas is not None and len(municipios_encontrados) > 0:
-        print(f"\n📋 EXEMPLO DO NOVO FORMATO 'Por Município Colunas':")
+        print(f"\nEXEMPLO DO NOVO FORMATO 'Por Municipio Colunas':")
         print("=" * 100)
         
         
-        print(f"\nEstrutura das colunas (primeiros 2 municípios como exemplo):")
+        print(f"\nEstrutura das colunas (primeiros 2 municipios como exemplo):")
         for municipio in municipios_encontrados[:2]:
             print(f"  • Paciente {municipio}")
             print(f"  • {municipio}")  
@@ -301,7 +319,7 @@ def processar_relatorio_simplificado(caminho_arquivo):
                     if paciente_col in df_municipio_colunas.columns:
                         paciente = df_municipio_colunas.iloc[i][paciente_col]
                         if pd.notna(paciente):
-                            print(f"  Município: {municipio}")
+                            print(f"  Municipio: {municipio}")
                             print(f"    Paciente: {paciente}")
                             print(f"    Procedimento: {df_municipio_colunas.iloc[i][f'{municipio}']}")
                             print(f"    Quantidade: {df_municipio_colunas.iloc[i][f'Quantidade {municipio}']}")
@@ -324,8 +342,6 @@ def processar_todos_arquivos_simplificado():
     arquivos_str = os.getenv("separarArquivo", "")
     
     if not arquivos_str:
-        print("⚠️ Variável de ambiente 'separarArquivo' não encontrada!")
-        
         arquivos = [
             "separarRelatorio/separarNeomater.xlsx",
             "separarRelatorio/separarNeotin.xlsx", 
@@ -339,18 +355,18 @@ def processar_todos_arquivos_simplificado():
         
         arquivos = [arquivo.strip() for arquivo in arquivos_str.split(',') if arquivo.strip()]
     
-    print(f"📁 Total de arquivos a processar: {len(arquivos)}")
+    print(f"Total de arquivos a processar: {len(arquivos)}")
     
     resultados = []
     arquivos_processados = 0
     
     for arquivo in arquivos:
         print("\n" + "=" * 80)
-        print(f"🚀 PROCESSANDO: {arquivo}")
+        print(f"PROCESSANDO: {arquivo}")
         print("=" * 80)
         
         if not os.path.exists(arquivo):
-            print(f"❌ Arquivo não encontrado: {arquivo}")
+            print(f"ERRO: Arquivo nao encontrado: {arquivo}")
             continue
         
         try:
@@ -358,20 +374,20 @@ def processar_todos_arquivos_simplificado():
             if resultado is not None:
                 resultados.append(resultado)
                 arquivos_processados += 1
-                print(f"✅ Concluído: {arquivo}")
+                print(f"OK: Concluido: {arquivo}")
             
         except Exception as e:
-            print(f"❌ Erro ao processar {arquivo}: {str(e)}")
+            print(f"ERRO ao processar {arquivo}: {str(e)}")
             import traceback
             traceback.print_exc()
     
     print("\n" + "=" * 80)
-    print("🎉 PROCESSAMENTO CONCLUÍDO!")
+    print("PROCESSAMENTO CONCLUIDO!")
     print("=" * 80)
     
     
     if resultados:
-        print(f"\n📈 RESUMO GERAL:")
+        print(f"\nRESUMO GERAL:")
         print("-" * 60)
         
         total_municipios = 0
@@ -385,28 +401,28 @@ def processar_todos_arquivos_simplificado():
             if resultado['df_dados_detalhados'] is not None:
                 num_registros_detalhados = len(resultado['df_dados_detalhados'])
             
-            print(f"📄 {os.path.basename(arquivo)}:")
-            print(f"   • Municípios encontrados: {num_municipios}")
+            print(f"Arquivo: {os.path.basename(arquivo)}:")
+            print(f"   • Municipios encontrados: {num_municipios}")
             print(f"   • Registros detalhados: {num_registros_detalhados}")
             
             total_municipios += num_municipios
             total_registros += num_registros_detalhados
         
-        print(f"\n📊 TOTAIS:")
+        print(f"\nTOTAIS:")
         print(f"   • Arquivos processados: {arquivos_processados}/{len(arquivos)}")
-        print(f"   • Total de municípios distintos: {total_municipios}")
+        print(f"   • Total de municipios distintos: {total_municipios}")
         print(f"   • Total de registros detalhados: {total_registros}")
         
         
         if resultados:
-            print(f"\n📂 ESTRUTURA DOS ARQUIVOS GERADOS:")
+            print(f"\nESTRUTURA DOS ARQUIVOS GERADOS:")
             print("-" * 60)
             print(f"Todos os arquivos foram salvos na pasta: relatorios_simplificados/")
-            print(f"Cada arquivo contém 2 planilhas:")
-            print(f"  1. 'Por Município Colunas' - Formato com colunas por município")
-            print(f"      • Paciente [município]")
-            print(f"      • [município] (apenas o nome)")
-            print(f"      • Quantidade [município]")
+            print(f"Cada arquivo contem 2 planilhas:")
+            print(f"  1. 'Por Municipio Colunas' - Formato com colunas por municipio")
+            print(f"      • Paciente [municipio]")
+            print(f"      • [municipio] (apenas o nome)")
+            print(f"      • Quantidade [municipio]")
             print(f"  2. 'Dados Detalhados' - Dados completos organizados")
     
     return resultados

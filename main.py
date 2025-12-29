@@ -4,7 +4,7 @@ from Prestador.prontobaby.prontobaby import analisar_prontobaby
 from separarRelatorio.main import processar_todos_arquivos_simplificado
 # from segvision.segvision import analisar_segvision
 
-if __name__ == "__main__":
+def main():
     processar_todos_arquivos_simplificado()
     
     analisar_neotin()
