@@ -11,12 +11,6 @@ Sistema desktop desenvolvido em Python para processamento, análise e geração 
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Pré-requisitos](#-pré-requisitos)
 - [Instalação](#-instalação)
-- [Funcionalidades](#-funcionalidades)
-- [Configuração](#-configuração)
-- [Desenvolvimento](#-desenvolvimento)
-- [Build e Deploy](#-build-e-deploy)
-- [Troubleshooting](#-troubleshooting)
-- [Contribuição](#-contribuição)
 
 ## 🎯 Visão Geral
 
