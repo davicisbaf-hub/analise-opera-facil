@@ -11,7 +11,6 @@ Sistema desktop desenvolvido em Python para processamento, análise e geração 
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Pré-requisitos](#-pré-requisitos)
 - [Instalação](#-instalação)
-- [Como Usar](#-como-usar)
 - [Funcionalidades](#-funcionalidades)
 - [Configuração](#-configuração)
 - [Desenvolvimento](#-desenvolvimento)
@@ -30,26 +29,26 @@ Este sistema foi desenvolvido para:
 
 ## 📁 Estrutura do Projeto
 
-📦 projeto-analise-hospitalar
-├── 📂 pycache/ # Caches do Python (NÃO versionar)
-├── 📂 venv/ # Ambiente virtual Python
-├── 📂 build/ # Arquivos temporários do PyInstaller
-├── 📂 dist/ # Executável gerado
-├── 📂 Prestador/ # Módulo de gestão de prestadores
-├── 📂 relatorios_simplificados/ # Pasta de saída dos relatórios
-├── 📂 separaRelatorio/ # Módulo de separação de relatórios
-│
-├── 📄 .env # Variáveis de ambiente (NÃO versionar)
-├── 📄 .gitignore # Configuração do Git
-├── 📄 analise.py # Lógica principal de análise
-├── 📄 analise.spec # Configuração do PyInstaller
-├── 📄 db.xlsx # Banco de dados em Excel
-├── 📄 logo.ico # Ícone da aplicação
-├── 📄 main.py # Ponto de entrada principal
-├── 📄 nacCirurgico.py # Análise de procedimentos cirúrgicos
-├── 📄 procedimentos.py # Gestão de procedimentos médicos
-├── 📄 readme.md # Este arquivo
-└── 📄 requirements.txt # Dependências do projeto
+📦 analise-relatorio
+-├── 📂 pycache/ # Caches do Python (NÃO versionar)
+-├── 📂 venv/ # Ambiente virtual Python
+-├── 📂 build/ # Arquivos temporários do PyInstaller
+-├── 📂 dist/ # Executável gerado
+-├── 📂 Prestador/ # Módulo de gestão de prestadores
+-├── 📂 relatorios_simplificados/ # Pasta de saída dos relatórios
+-├── 📂 separaRelatorio/ # Módulo de separação de relatórios
+-│
+-├── 📄 .env # Variáveis de ambiente (NÃO versionar)
+-├── 📄 .gitignore # Configuração do Git
+-├── 📄 analise.py # Lógica principal de análise
+-├── 📄 analise.spec # Configuração do PyInstaller
+-├── 📄 db.xlsx # Banco de dados em Excel
+-├── 📄 logo.ico # Ícone da aplicação
+-├── 📄 main.py # Ponto de entrada principal
+-├── 📄 nacCirurgico.py # Análise de procedimentos cirúrgicos
+-├── 📄 procedimentos.py # Gestão de procedimentos médicos
+-├── 📄 readme.md # Este arquivo
+-└── 📄 requirements.txt # Dependências do projeto
 
 
 ## ⚙️ Pré-requisitos
@@ -65,7 +64,7 @@ Antes de começar, você precisa ter instalado:
 
 ### 1. Clonar o Repositório
 ```bash
-git clone [URL_DO_SEU_REPOSITORIO]
+git clone [URL_DO_REPOSITORIO]
 cd [NOME_DO_PROJETO]
 
 # Windows
@@ -74,7 +73,7 @@ python -m venv .venv
 
 pip install -r requirements.txt
 
-## 📦 Build e Deploy
-# Criar Executável Windows
+### 📦 Build e Deploy
+## Criar Executável Windows
 
 pyinstaller --clean --noconsole --onefile .\analise.py
