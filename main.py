@@ -11,3 +11,5 @@ def main():
     analisar_neomater()
     analisar_prontobaby()
     # analisar_segvision()
+
+# main()

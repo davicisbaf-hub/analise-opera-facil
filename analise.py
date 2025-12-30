@@ -9,9 +9,11 @@ import sys
 import traceback
 import logging
 import subprocess
+from pathlib import Path
+
 
 logging.basicConfig(
-    filename='app_errors.log',
+    filename='./app_errors.log',
     level=logging.ERROR,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
@@ -183,17 +185,17 @@ results_buttons_container = tk.Frame(results_section_frame, bg=COLORS['light'], 
 results_buttons_container.pack(fill='x')
 
 def abrir_resultados_neomater():
-    caminho = os.path.abspath("../Prestador/neomater/resultado")
+    caminho = Path("../Prestador/neomater/resultado").resolve(strict=False)
     os.makedirs(caminho, exist_ok=True)
     AbrirPasta.abrir(caminho)
 
 def abrir_resultados_neotin():
-    caminho = os.path.abspath("../Prestador/neotin/resultado")
+    caminho = Path("../Prestador/neotin/resultado").resolve(strict=False)
     os.makedirs(caminho, exist_ok=True)
     AbrirPasta.abrir(caminho)
 
 def abrir_resultados_prontobaby():
-    caminho = os.path.abspath("../Prestador/prontobaby/resultado")
+    caminho = Path("../Prestador/prontobaby/resultado").resolve(strict=False)
     os.makedirs(caminho, exist_ok=True)
     AbrirPasta.abrir(caminho)
 
@@ -371,9 +373,9 @@ def submit():
     file3 = entry3.get()
     
     # Verificar se todos os arquivos foram selecionados
-    if not all([file1, file2, file3]):
-        messagebox.showwarning("Atenção", "Por favor, selecione todos os 3 arquivos!")
-        return
+    # if not all([file1, file2, file3]):
+    #     messagebox.showwarning("Atenção", "Por favor, selecione todos os 3 arquivos!")
+    #     return
     
     # Confirmar com o usuário
     confirm = messagebox.askyesno(
@@ -389,11 +391,11 @@ def submit():
         return
     
     # Desabilitar botão durante processamento
-    submit_button.config(state='disabled', text="Processando...")
+    submit_button.config(state='disabled', text="Processando")
     root.update()
     
     try:
-        destination_folder = "../separarRelatorio"
+        destination_folder = "separarRelatorio"
         os.makedirs(destination_folder, exist_ok=True)
         
         # Copiar e renomear arquivos
@@ -432,8 +434,9 @@ def submit():
         
         # Processar arquivos
         try:
-            processar_arquivos()
             exe_main()
+            processar_arquivos()
+            
             
             # Mostrar mensagem de sucesso
             messagebox.showinfo(
