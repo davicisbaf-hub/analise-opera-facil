@@ -232,7 +232,7 @@ def processar_relatorio_simplificado(caminho_arquivo):
     
     print(f"Processando: {caminho_arquivo}")
     
-    # Adicionar verificação de arquivo
+    
     if not os.path.exists(caminho_arquivo):
         print(f"ERRO: Arquivo nao encontrado: {caminho_arquivo}")
         return None

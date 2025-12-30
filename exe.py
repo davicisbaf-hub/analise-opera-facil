@@ -6,6 +6,36 @@ from main import main as exe_main
 from separarRelatorio.main import processar_todos_arquivos_simplificado as processar_arquivos
 from tkinter import font as tkfont
 
+
+import os
+import platform
+import subprocess
+
+class AbrirPasta:
+    @staticmethod
+    def abrir(caminho):
+        """Abre uma pasta no explorador de arquivos do sistema"""
+        if not os.path.isdir(caminho):
+            # Tenta criar a pasta se não existir
+            try:
+                os.makedirs(caminho, exist_ok=True)
+            except Exception as e:
+                print(f"Erro ao criar pasta: {e}")
+                return
+        
+        sistema = platform.system()
+        
+        try:
+            if sistema == "Windows":
+                os.startfile(caminho)
+            elif sistema == "Darwin":  # macOS
+                subprocess.Popen(["open", caminho])
+            else:  # Linux
+                subprocess.Popen(["xdg-open", caminho])
+        except Exception as e:
+            print(f"Erro ao abrir a pasta: {e}")
+
+
 # Cores modernas
 COLORS = {
     'primary': '#3a7ca5',
@@ -111,6 +141,115 @@ instructions_label = tk.Label(
     pady=15
 )
 instructions_label.pack()
+
+# ========== SEÇÃO DE RESULTADOS ==========
+results_section_frame = tk.Frame(
+    main_frame,
+    bg=COLORS['light'],
+    relief='flat',
+    borderwidth=1,
+    highlightbackground='#d1d8e0',
+    highlightthickness=1
+)
+results_section_frame.pack(fill='x', pady=(1, 1))
+
+# Título da seção
+results_title = tk.Label(
+    results_section_frame,
+    text="📁 ABRIR PASTAS DE RESULTADOS",
+    font=("Segoe UI", 11, "bold"),
+    bg=COLORS['light'],
+    fg=COLORS['primary'],
+    padx=15,
+    
+)
+results_title.pack(anchor='w')
+
+# Frame para os botões de resultados
+results_buttons_container = tk.Frame(results_section_frame, bg=COLORS['light'], padx=15)
+results_buttons_container.pack(fill='x')
+
+def abrir_resultados_neomater():
+    caminho = os.path.abspath("./Prestador/neomater/resultado")
+    os.makedirs(caminho, exist_ok=True)
+    AbrirPasta.abrir(caminho)
+
+def abrir_resultados_neotin():
+    caminho = os.path.abspath("./Prestador/neotin/resultado")
+    os.makedirs(caminho, exist_ok=True)
+    AbrirPasta.abrir(caminho)
+
+def abrir_resultados_prontobaby():
+    caminho = os.path.abspath("./Prestador/prontobaby/resultado")
+    os.makedirs(caminho, exist_ok=True)
+    AbrirPasta.abrir(caminho)
+
+# Botões para abrir resultados
+def criar_botao_resultado(parent, text, command, color):
+    btn = tk.Button(
+        parent,
+        text=text,
+        command=command,
+        font=("Segoe UI", 10),
+        bg=color,
+        fg='white',
+        relief='flat',
+        padx=20,
+        pady=10,
+        cursor='hand2',
+        width=15
+    )
+    
+    # Efeitos hover
+    def on_enter(e):
+        btn['background'] = COLORS['accent']
+    
+    def on_leave(e):
+        btn['background'] = color
+    
+    btn.bind("<Enter>", on_enter)
+    btn.bind("<Leave>", on_leave)
+    
+    return btn
+
+# Criar botões para cada pasta
+btn_result_neomater = criar_botao_resultado(
+    results_buttons_container,
+    "Neomater",
+    abrir_resultados_neomater,
+    "#2c3e50"
+)
+
+btn_result_neotin = criar_botao_resultado(
+    results_buttons_container,
+    "Neotin",
+    abrir_resultados_neotin,
+    "#34495e"
+)
+
+btn_result_prontobaby = criar_botao_resultado(
+    results_buttons_container,
+    "Pronto Baby",
+    abrir_resultados_prontobaby,
+    "#7f8c8d"
+)
+
+# Posicionar botões lado a lado com espaçamento
+btn_result_neomater.pack(side='left', padx=(0, 10))
+btn_result_neotin.pack(side='left', padx=(0, 10))
+btn_result_prontobaby.pack(side='left')
+
+# Texto informativo
+results_info = tk.Label(
+    results_section_frame,
+    text="Clique em qualquer botão acima para abrir a pasta com os relatórios gerados.",
+    font=("Segoe UI", 9),
+    bg=COLORS['light'],
+    fg=COLORS['dark'],
+    padx=15,
+)
+results_info.pack(anchor='w')
+# ========================================
 
 # Funções para seleção de arquivos
 def select_file1():
@@ -266,7 +405,7 @@ def submit():
               try:
                   ext = os.path.splitext(original_file)[1]
                   # Adicionar timestamp ao nome do arquivo
-                  new_name_with_timestamp = f"{new_name}_{timestamp}"
+                  new_name_with_timestamp = f"{new_name}"
                   new_path = os.path.join(destination_folder, new_name_with_timestamp + ext)
                   
                   # Copiar o arquivo
