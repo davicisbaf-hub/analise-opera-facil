@@ -1,15 +1,28 @@
 import tkinter as tk
-from tkinter import filedialog, ttk, messagebox
+from tkinter import filedialog, ttk, messagebox, font as tkfont
 import shutil
 import os
 from main import main as exe_main
-from separarRelatorio.main import processar_todos_arquivos_simplificado as processar_arquivos
-from tkinter import font as tkfont
-
-
-import os
 import platform
+from separarRelatorio.main import processar_todos_arquivos_simplificado as processar_arquivos
+import sys
+import traceback
+import logging
 import subprocess
+
+logging.basicConfig(
+    filename='app_errors.log',
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    # Se quiser mostrar uma mensagem ao usuário
+    import tkinter.messagebox as msgbox
+    msgbox.showerror("Erro", f"Ocorreu um erro: {exc_value}")
+
+sys.excepthook = handle_exception
 
 class AbrirPasta:
     @staticmethod
