@@ -67,7 +67,9 @@ python -m venv .venv
 
 pip install -r requirements.txt
 
-### 📦 Build e Deploy
-## Criar Executável Windows
+## 📦 Build e Deploy
+# Criar Executável Windows
 
 pyinstaller --clean --noconsole --onefile .\analise.py
+
+AVISO: Caso queira executar o app sem criar um executavel, execute o arquivo analise.py
