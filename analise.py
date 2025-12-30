@@ -183,17 +183,17 @@ results_buttons_container = tk.Frame(results_section_frame, bg=COLORS['light'], 
 results_buttons_container.pack(fill='x')
 
 def abrir_resultados_neomater():
-    caminho = os.path.abspath("./Prestador/neomater/resultado")
+    caminho = os.path.abspath("../Prestador/neomater/resultado")
     os.makedirs(caminho, exist_ok=True)
     AbrirPasta.abrir(caminho)
 
 def abrir_resultados_neotin():
-    caminho = os.path.abspath("./Prestador/neotin/resultado")
+    caminho = os.path.abspath("../Prestador/neotin/resultado")
     os.makedirs(caminho, exist_ok=True)
     AbrirPasta.abrir(caminho)
 
 def abrir_resultados_prontobaby():
-    caminho = os.path.abspath("./Prestador/prontobaby/resultado")
+    caminho = os.path.abspath("../Prestador/prontobaby/resultado")
     os.makedirs(caminho, exist_ok=True)
     AbrirPasta.abrir(caminho)
 
@@ -393,7 +393,7 @@ def submit():
     root.update()
     
     try:
-        destination_folder = "./separarRelatorio"
+        destination_folder = "../separarRelatorio"
         os.makedirs(destination_folder, exist_ok=True)
         
         # Copiar e renomear arquivos
