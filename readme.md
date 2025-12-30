@@ -30,25 +30,25 @@ Este sistema foi desenvolvido para:
 ## 📁 Estrutura do Projeto
 
 📦 analise-relatorio
--├── 📂 pycache/ # Caches do Python (NÃO versionar)
--├── 📂 venv/ # Ambiente virtual Python
--├── 📂 build/ # Arquivos temporários do PyInstaller
--├── 📂 dist/ # Executável gerado
--├── 📂 Prestador/ # Módulo de gestão de prestadores
--├── 📂 relatorios_simplificados/ # Pasta de saída dos relatórios
--├── 📂 separaRelatorio/ # Módulo de separação de relatórios
--│
--├── 📄 .env # Variáveis de ambiente (NÃO versionar)
--├── 📄 .gitignore # Configuração do Git
--├── 📄 analise.py # Lógica principal de análise
--├── 📄 analise.spec # Configuração do PyInstaller
--├── 📄 db.xlsx # Banco de dados em Excel
--├── 📄 logo.ico # Ícone da aplicação
--├── 📄 main.py # Ponto de entrada principal
--├── 📄 nacCirurgico.py # Análise de procedimentos cirúrgicos
--├── 📄 procedimentos.py # Gestão de procedimentos médicos
--├── 📄 readme.md # Este arquivo
--└── 📄 requirements.txt # Dependências do projeto
+- ├── 📂 pycache/ # Caches do Python (NÃO versionar)
+- ├── 📂 venv/ # Ambiente virtual Python
+- ├── 📂 build/ # Arquivos temporários do PyInstaller
+- ├── 📂 dist/ # Executável gerado
+- ├── 📂 Prestador/ # Módulo de gestão de prestadores
+- ├── 📂 relatorios_simplificados/ # Pasta de saída dos relatórios
+- ├── 📂 separaRelatorio/ # Módulo de separação de relatórios
+- │
+- ├── 📄 .env # Variáveis de ambiente (NÃO versionar)
+- ├── 📄 .gitignore # Configuração do Git
+- ├── 📄 analise.py # Lógica principal de análise
+- ├── 📄 analise.spec # Configuração do PyInstaller
+- ├── 📄 db.xlsx # Banco de dados em Excel
+- ├── 📄 logo.ico # Ícone da aplicação
+- ├── 📄 main.py # Ponto de entrada principal
+- ├── 📄 nacCirurgico.py # Análise de procedimentos cirúrgicos
+- ├── 📄 procedimentos.py # Gestão de procedimentos médicos
+- ├── 📄 readme.md # Este arquivo
+- └── 📄 requirements.txt # Dependências do projeto
 
 
 ## ⚙️ Pré-requisitos
