@@ -1,4 +1,4 @@
-# 🏥 Sistema de Análise de Relatórios Hospitalares
+# 🏥 Sistema de Análise de Relatórios Opera Facil
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
