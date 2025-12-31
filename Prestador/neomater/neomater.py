@@ -1,4 +1,7 @@
 import pandas as pd
+from pathlib import Path
+import sys
+import os
 from procedimentos import (
     pacote_otorrino, pacote_geral, pacote_oftalmo, pacote_hispospadia,
     pacote_inguinal, pacote_hidrocele, pacote_adeno, pacote_amig,
@@ -7,8 +10,23 @@ from procedimentos import (
 )
 
 def analisar_neomater():
-    arquivo = "relatorios_simplificados/separarNeomater_SIMPLIFICADO.xlsx"
-    municipios = ["RJ - Belford Roxo", "RJ - Duque de Caxias", "RJ - Itaguaí", "RJ - Japeri", "RJ - Magé", "RJ - Mesquita", "RJ - Nilópolis", "RJ - Nova Iguaçu", "RJ - Paracambi", "RJ - Queimados", "RJ - Seropédica", "RJ - São João de Meriti"]
+    # Determinar o diretório de execução atual
+    if getattr(sys, 'frozen', False):
+        # Executando a partir de um executável (.exe)
+        base_dir = Path(sys.executable).parent
+    else:
+        # Executando a partir do script Python
+        base_dir = Path(__file__).parent
+    
+    arquivo = base_dir / "../relatorios_simplificados/separarNeomater_SIMPLIFICADO.xlsx"
+    
+    # Criar diretórios de saída se não existirem
+    output_dir = base_dir / "../Prestador/neomater/resultado"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    municipios = ["RJ - Belford Roxo", "RJ - Duque de Caxias", "RJ - Itaguaí", "RJ - Japeri", 
+                  "RJ - Magé", "RJ - Mesquita", "RJ - Nilópolis", "RJ - Nova Iguaçu", 
+                  "RJ - Paracambi", "RJ - Queimados", "RJ - Seropédica", "RJ - São João de Meriti"]
     
     # Dicionário para acumular os resultados de todos os municípios
     resultados_por_municipio = {}
@@ -18,6 +36,12 @@ def analisar_neomater():
 
     for municipio in municipios:
         try:
+            print(f"Processando {municipio}...")
+            # Verificar se o arquivo existe
+            if not arquivo.exists():
+                print(f"Arquivo {arquivo} não encontrado!")
+                continue
+                
             # Inicializar todas as listas de procedimentos
             otorrino = pacote_otorrino()
             geral = pacote_geral()
@@ -41,14 +65,14 @@ def analisar_neomater():
             coluna_quantidade = f"Quantidade {municipio}"
 
             if coluna_procedimento not in tabela.columns:
-                print(f"Coluna '{coluna_procedimento}' não encontrada!")
+                print(f"Coluna '{coluna_procedimento}' não encontrada em {municipio}!")
                 continue
             
             if coluna_quantidade not in tabela.columns:
-                print(f"Coluna '{coluna_quantidade}' não encontrada!")
+                print(f"Coluna '{coluna_quantidade}' não encontrada em {municipio}!")
                 continue
             
-            resultados_municipio = {municipio: {} for municipio in municipios}  # ← Todos municipios já incluídos   
+            resultados_municipio = {}
             
             def process_group(procedimentos):
                 total = 0
@@ -130,8 +154,9 @@ def analisar_neomater():
                 
                 # Criar DataFrame para não listados deste município
                 df_nao_listado = pd.DataFrame({
-                    f"Procedimento_{municipio}": list(procedimentos_nao_mapeados.keys()),
-                    f"Quantidade_{municipio}": list(procedimentos_nao_mapeados.values())
+                    "Procedimento": list(procedimentos_nao_mapeados.keys()),
+                    "Quantidade": list(procedimentos_nao_mapeados.values()),
+                    "Município": municipio
                 })
                 nao_listados_dfs.append(df_nao_listado)
             
@@ -141,8 +166,11 @@ def analisar_neomater():
 
         except Exception as e:
             print(f"Erro em {municipio}: {e}")
+            import traceback
+            traceback.print_exc()
             continue
 
+    # Salvar resultados consolidados
     if resultados_por_municipio: 
         todos_procedimentos = set()
         for municipio, totais in resultados_por_municipio.items():
@@ -166,16 +194,23 @@ def analisar_neomater():
         df_consolidado.loc['TOTAL'] = df_consolidado.sum()
         
         # Salvar em Excel
-        df_consolidado.to_excel("Prestador/neomater/resultado/TODOS_MUNICIPIOS_CONSOLIDADO.xlsx")
-        print(f"\nArquivo consolidado salvo com {len(df_consolidado.columns)} colunas")
+        output_path = output_dir / "TODOS_MUNICIPIOS_CONSOLIDADO.xlsx"
+        df_consolidado.to_excel(output_path)
+        print(f"\nArquivo consolidado salvo em: {output_path}")
+        print(f"Dimensões: {df_consolidado.shape}")
     
     # CRIAR EXCEL COM PROCEDIMENTOS NÃO LISTADOS
     if nao_listados_dfs:
-        # Juntar horizontalmente todos os DataFrames de não listados
-        if len(nao_listados_dfs) > 1:
-            df_nao_listados_consolidado = pd.concat(nao_listados_dfs, axis=1)
-        else:
-            df_nao_listados_consolidado = nao_listados_dfs[0]
+        # Juntar todos os DataFrames verticalmente
+        df_nao_listados_consolidado = pd.concat(nao_listados_dfs, ignore_index=True)
         
-        df_nao_listados_consolidado.to_excel("Prestador/neomater/resultado/PROCEDIMENTOS_NAO_LISTADOS_CONSOLIDADO.xlsx", index=False)
-        print(f"Arquivo de procedimentos não listados salvo com {len(df_nao_listados_consolidado.columns)} colunas")
+        # Reorganizar colunas
+        df_nao_listados_consolidado = df_nao_listados_consolidado[["Município", "Procedimento", "Quantidade"]]
+        
+        output_nao_listados_path = output_dir / "PROCEDIMENTOS_NAO_LISTADOS_CONSOLIDADO.xlsx"
+        df_nao_listados_consolidado.to_excel(output_nao_listados_path, index=False)
+        print(f"Arquivo de procedimentos não listados salvo em: {output_nao_listados_path}")
+        print(f"Total de procedimentos não listados: {len(df_nao_listados_consolidado)}")
+
+if __name__ == "__main__":
+    analisar_neomater()

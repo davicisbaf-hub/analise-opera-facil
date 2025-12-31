@@ -5,11 +5,7 @@ from separarRelatorio.main import processar_todos_arquivos_simplificado
 # from segvision.segvision import analisar_segvision
 
 def main():
-    processar_todos_arquivos_simplificado()
-    
     analisar_neotin()
     analisar_neomater()
     analisar_prontobaby()
     # analisar_segvision()
-
-# main()

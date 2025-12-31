@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 from procedimentos import (
     pacote_otorrino, pacote_geral, pacote_oftalmo, pacote_hispospadia,
     pacote_inguinal, pacote_hidrocele, pacote_adeno, pacote_amig,
@@ -7,7 +8,7 @@ from procedimentos import (
 )
 
 def analisar_neotin():
-    arquivo = "relatorios_simplificados/separarNeotin_SIMPLIFICADO.xlsx"
+    arquivo = Path("../relatorios_simplificados/separarNeotin_SIMPLIFICADO.xlsx").resolve(strict=False)
     municipios = ["RJ - Belford Roxo", "RJ - Duque de Caxias", "RJ - Itaguaí", "RJ - Japeri", "RJ - Magé", "RJ - Mesquita", "RJ - Nilópolis", "RJ - Nova Iguaçu", "RJ - Paracambi", "RJ - Queimados", "RJ - Seropédica", "RJ - São João de Meriti"]
     
     # Dicionário para acumular os resultados de todos os municípios
@@ -166,7 +167,7 @@ def analisar_neotin():
         df_consolidado.loc['TOTAL'] = df_consolidado.sum()
         
         # Salvar em Excel
-        df_consolidado.to_excel("analise_relatorio/Prestador/neotin/resultado/TODOS_MUNICIPIOS_CONSOLIDADO.xlsx")
+        df_consolidado.to_excel("../Prestador/neotin/resultado/TODOS_MUNICIPIOS_CONSOLIDADO.xlsx")
         print(f"\nArquivo consolidado salvo com {len(df_consolidado.columns)} colunas")
     
     # CRIAR EXCEL COM PROCEDIMENTOS NÃO LISTADOS
@@ -177,5 +178,5 @@ def analisar_neotin():
         else:
             df_nao_listados_consolidado = nao_listados_dfs[0]
         
-        df_nao_listados_consolidado.to_excel("analise_relatorio/Prestador/neotin/resultado/PROCEDIMENTOS_NAO_LISTADOS_CONSOLIDADO.xlsx", index=False)
+        df_nao_listados_consolidado.to_excel("../Prestador/neotin/resultado/PROCEDIMENTOS_NAO_LISTADOS_CONSOLIDADO.xlsx", index=False)
         print(f"Arquivo de procedimentos não listados salvo com {len(df_nao_listados_consolidado.columns)} colunas")
